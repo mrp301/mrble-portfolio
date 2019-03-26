@@ -5,7 +5,7 @@
     <div class='l-container'>
       <div class='l-container__body'>
         <h2>mrbleのサイトへようこそ！</h2>
-        <p>将来ポートフォリオになるサイトです。<br>
+        <p>将来ポートフォリオになるサイトです!<br>
         とりあえずイラストとかブログ記事とか適当に追加していく予定です！</p>
       </div>
     </div>
