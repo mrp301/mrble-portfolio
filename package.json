@@ -1,0 +1,31 @@
+{
+  "name": "mrble",
+  "version": "1.0.0",
+  "description": "My sublime Nuxt.js project",
+  "author": "mrble",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "heroku-postbuild": "npm run build"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "cross-env": "^5.2.0",
+    "express": "^4.16.4",
+    "nedb": "^1.8.0",
+    "nuxt": "^2.4.0",
+    "path": "^0.12.7",
+    "s3": "^4.4.0"
+  },
+  "devDependencies": {
+    "node-sass": "^4.11.0",
+    "nodemon": "^1.18.9",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0",
+    "sass-loader": "^7.1.0"
+  }
+}
