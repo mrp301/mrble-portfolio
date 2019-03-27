@@ -11,8 +11,9 @@ let db = new NeDB({
   autoload: true
 });
 const s3Upload = require('./s3.js');
+const ACCESS_KEY = process.env.access_key;
 
-// CORSを許可する
+// 環境変数が一致した時のみCORSを許可する
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
