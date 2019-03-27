@@ -12,6 +12,13 @@ let db = new NeDB({
 });
 const s3Upload = require('./s3.js');
 
+// CORSを許可する
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.post('/db/addData', (req, res) => {
   const data = req.body
 
