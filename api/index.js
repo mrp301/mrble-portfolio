@@ -27,6 +27,9 @@ app.post('/db/addData', (req, res) => {
   db.remove({}, {multi: true}, (err, doc) => {
     //postされたデータを全てinsert
     data.forEach((value, index) => {
+      if(value.filePath !=== '') {
+        s3Upload(value.filePath)
+      }
       db.insert(value, (err, doc) => {})
     })
   })

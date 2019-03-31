@@ -3,14 +3,14 @@
 
 const s3 = require('s3');
 const client = s3.createClient({
-  maxAsyncS3: 20,     // デフォルトのままでOK
-  s3RetryCount: 3,    // デフォルトのままでOK
-  s3RetryDelay: 1000, // デフォルトのままでOK
-  multipartUploadThreshold: 20971520, // デフォルトのままでOK
-  multipartUploadSize: 15728640, // デフォルトのままでOK
+  maxAsyncS3: 20,
+  s3RetryCount: 3,
+  s3RetryDelay: 1000,
+  multipartUploadThreshold: 20971520,
+  multipartUploadSize: 15728640,
   s3Options: {
-    accessKeyId: '', // 今回S3にアクセスするために作成したIAMユーザーのアクセス
-    secretAccessKey: '',  // 今回S3にアクセスするために作成したIAMユーザーのシークレット・キー
+    accessKeyId: '',
+    secretAccessKey: '',
   },
 });
 

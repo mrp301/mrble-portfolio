@@ -4,31 +4,40 @@
     <div class='editArea'>
       <div class='editArea__left'>
         <h2>DBリスト</h2>
-
-          <table>
-            <thead>
-              <tr>
-                <th>_id</th>
-                <th>title</th>
-                <th>createYear</th>
-                <th>詳細</th>
-                <th>delete</th>
-              </tr>
-            </thead>
-            <tbody class='editArea_body'>
-              <tr v-for='(item,index) in data'>
-                <td><input class='no' type='number' v-model='data[index]._id'></td>
-                <td><input type='text' v-model='data[index].title' ></td>
-                <td><input class='no' type='number' v-model='data[index].createYear'></td>
-                <td><button @click='openModal(index)'>詳細</button></td>
-                <td><button class='delete' @click='deleteRow(index)'>削除</button></td>
-              </tr>
-            </tbody>
-          </table>
-          <div>
-            <button @click='createRow()'>行の追加</button>
-            <button @click='submitData()'>DB更新</button>
+        <form v-on:submit.prevent='submitData()'>
+          <div class='editAreaHead-container'>
+            <table class='editAreaHead'>
+              <thead>
+                <tr>
+                  <th>_id</th>
+                  <th>title</th>
+                  <th>createYear</th>
+                  <th>詳細</th>
+                  <th>delete</th>
+                </tr>
+              </thead>
+            </table>
           </div>
+          <div
+            ref='editAreaBody'
+            class='editAreaBody-container'>
+            <table>
+              <tbody class='editArea_body'>
+                <tr v-for='(item,index) in data'>
+                  <td><input class='no' type='number' v-model='data[index]._id'></td>
+                  <td><input type='text' v-model='data[index].title' ></td>
+                  <td><input class='no' type='number' v-model='data[index].createYear'></td>
+                  <td><button class='detail' @click.submit.prevent='openModal(index)'>詳細</button></td>
+                  <td><button class='delete' @click.submit.prevent='deleteRow(index)'>削除</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+        <div>
+          <button @click='createRow()'>行の追加</button>
+          <button @click='submitData()'>DB更新</button>
+        </div>
       </div>
       <div class='editArea__right'>
         <h2>▼登録内容(JSON)</h2>
@@ -51,10 +60,15 @@
       ref='modal'>
       <p class='modal__header'>{{ modal.data.title }}</p>
       <dl>
-        <div v-if='modal.data.title !== ""'>
+        <div>
           <dt>画像</dt>
           <dd class='modal__img'>
             <img
+              v-if='modal.data.filePath !== ""'
+              :alt='modal.data.title'
+              :src='modal.data.filePath'>
+            <img
+              v-else-if='modal.data.title'
               :alt='modal.data.title'
               :src='"https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/img/"+ modal.data.title +".jpg"'>
           </dd>
@@ -77,11 +91,10 @@
         </div>
         <div>
           <dt>ファイルパス</dt>
-          <dd><input type='file'></dd>
+          <dd><input type='file' @change='selectedFile' ref='inputFile'></dd>
         </div>
       </dl>
       <div class='modal__btnContainer'>
-        <!-- <button @click='updateDate()'>登録</button> -->
         <button @click='closeModal()'>閉じる</button>
       </div>
     </div>
@@ -133,6 +146,21 @@ export default {
       this.$router.push('/edit')
     },
 
+    selectedFile(e) {
+      e.preventDefault()
+      let file = e.target.files[0]
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result
+        const name = file.name
+        this.data[this.modal.index].filePath = result
+        this.data[this.modal.index].title = name
+        this.modal.data.filePath = result
+        this.modal.data.title = name
+      }
+      reader.readAsDataURL(file);
+    },
+
     createRow() {
       this.data.push({
         _id: parseInt(this.data.slice(-1)[0]._id) + 1,
@@ -147,16 +175,18 @@ export default {
     deleteRow(index) {
       this.insertLog(index +'行：'+ JSON.stringify(this.data[index]) +'を削除しました\n')
       this.data.splice(index,1)
+      this.modal.index = 0
     },
 
-    scrollTextArea() {
+    scrollTop() {
       this.$refs.textArea.scrollTop = this.$refs.textArea.scrollHeight
+      this.$refs.editAreaBody.scrollTop = this.$refs.editAreaBody.scrollHeight
     },
 
     insertLog(text) {
       this.getCurrentTime()
       this.log += this.currentTime + text
-      this.scrollTextArea()
+      this.scrollTop()
     },
 
     getCurrentTime() {
@@ -170,6 +200,7 @@ export default {
     closeModal() {
       this.$refs.modal.style.display = 'none'
       this.$refs.overlay.style.display = 'none'
+      this.$refs.inputFile.value = ''
     },
 
     openModal(index) {
@@ -203,31 +234,55 @@ export default {
   margin: 0 auto;
 }
 
+.editAreaHead-container {
+  padding-right: 10px;
+  border-top: solid 1px #333;
+  border-left: solid 1px #333;
+  border-right: solid 1px #333;
+  background: #eee;
+}
+
+.editAreaBody-container {
+  padding-right: 10px;
+  overflow-y: scroll;
+  border: solid 1px #333;
+
+  tr {
+    &:hover {
+      background: #eef2fd;
+    }
+  }
+}
+
 table {
   width: 100%;
-  border: solid 1px #333;
   button {
     margin: 0;
   }
 }
 
 th,td {
+  width: 20%;
   padding: 5px 8px;
 }
 
 tbody {
   display: block;
-  overflow-y: scroll;
   height: 500px;
-  & tr:nth-child(even) {
-    background: #eee;
+
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 100%;
+    height: 35px;
+  }
+
+  tr:nth-child(even) {
+    background: #f9f8f8;
   }
 }
 
 thead {
-  display: block;
-  background: #eee;
-  border-bottom: solid 1px #333;
   text-align: left;
 }
 
@@ -248,6 +303,10 @@ button {
   &.delete {
     width: 100%;
     background: #fd4040;
+  }
+
+  &.detail {
+    width: 100%;
   }
 }
 

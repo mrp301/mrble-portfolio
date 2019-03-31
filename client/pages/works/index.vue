@@ -20,6 +20,13 @@
         <li v-for='item in data'>
           <nuxt-link :to='{name:"works-slug", params:{slug:item.title}}'>
             <img :src='"https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/img/"+ item.title +".jpg"'>
+            <div class='worksList-head'>
+              <div class='creafix'>
+                <p class='worksList-id'>id {{ item._id }}</p>
+                <p class='worksList-createYear'>createYear {{ item.createYear }}年</p>
+              </div>
+              <p class='worksList-title'>{{ item.title }}</p>
+            </div>
           </nuxt-link>
         </li>
       </ul>
@@ -94,18 +101,49 @@ h2 {
   text-align: center;
 
   li {
+    display: inline-block;
     margin-bottom: 5px;
-    background: #eaeaea;
+    border: solid 1px  #d4d4d4;
+    background: #fff;
+    box-shadow: 0 2px 3px 0 #f1f1f1;
+
+    .worksList-head {
+      padding: 10px;
+      color: #666;
+      line-height: 1;
+    }
+
+    .worksList-id {
+      font-size: 10px;
+      float: left;
+    }
+
+    .worksList-createYear {
+      font-size: 8px;
+      float: right;
+    }
+
+    .worksList-title {
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 5px;
+      text-align: left;
+    }
 
     img {
-      padding: 5px;
       width: 100%;
+    }
 
-      &:hover {
-        opacity: .7;
-      }
+    &:hover {
+      opacity: .7;
     }
   }
+}
+
+.creafix::after {
+  content: '';
+  clear: both;
+  display: block;
 }
 
 input {
