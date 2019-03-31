@@ -129,15 +129,15 @@ export default {
 
   async asyncData (context) {
     console.log('async発火')
-    //let {data} = await axios.get('http://localhost:3000/api/db/getData')
-    let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData')
+    let {data} = await axios.get('http://localhost:3000/api/db/getData')
+    //let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData')
     return { data: data }
   },
 
   methods: {
     async submitData() {
-      //await axios.post('http://localhost:3000/api/db/addData', this.data)
-      await axios.post('https://mrble-portfolio.herokuapp.com/api/db/addData', this.data)
+      await axios.post('http://localhost:3000/api/db/addData', this.data)
+      //await axios.post('https://mrble-portfolio.herokuapp.com/api/db/addData', this.data)
       .then((response) => {
        this.insertLog('通信成功\n')
       }).catch(() => {

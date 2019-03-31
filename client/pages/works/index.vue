@@ -60,8 +60,8 @@ export default {
   },
 
   async asyncData (context) {
-    //let {data} = await axios.get('http://localhost:3000/api/db/getData')
-    let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData')
+    let {data} = await axios.get('http://localhost:3000/api/db/getData')
+    //let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData')
     return { data: data }
   },
 }
