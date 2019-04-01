@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import footerTmp from '~/components/footerTmp'
+import footerTmp from '~/components/FooterTmp'
 
 export default {
   components: {
