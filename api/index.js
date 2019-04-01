@@ -6,6 +6,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const path = require('path');
 const NeDB = require('nedb');
+const apiAccessKey = process.env.apiAccessKey;
 let db = new NeDB({
   filename: path.join(__dirname, 'db/mirai.db'),
   autoload: true
