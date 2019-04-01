@@ -140,6 +140,7 @@ export default {
       //await axios.post('https://mrble-portfolio.herokuapp.com/api/db/addData', this.data)
       .then((response) => {
        this.insertLog('通信成功\n')
+       this.insertLog(response)
       }).catch(() => {
         this.insertLog('通信失敗\n')
       })
@@ -211,7 +212,6 @@ export default {
     }
   },
 }
-
 </script>
 
 <style lang='scss' scoped>
