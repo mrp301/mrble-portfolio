@@ -7,6 +7,16 @@
     </div>
     <div class='sortContainer'>
       <ul class='sort'>
+        <li :class='{"is-actibe": sort === "2014"}'>
+          <nuxt-link
+            :to='{query: {createYear: "2014"}, path: "/works"}'>2014年
+          </nuxt-link>
+        </li>
+        <li :class='{"is-actibe": sort === "2015"}'>
+          <nuxt-link
+            :to='{query: {createYear: "2015"}, path: "/works"}'>2015年
+          </nuxt-link>
+        </li>
         <li :class='{"is-actibe": sort === "2016"}'>
           <nuxt-link
             :to='{query: {createYear: "2016"}, path: "/works"}'>2016年
@@ -160,6 +170,14 @@ export default {
 
     &:nth-child(5) {
       background: rgb(153, 92, 133);
+    }
+
+    &:nth-child(6) {
+      background: rgb(153, 114, 92);
+    }
+
+    &:nth-child(7) {
+      background: rgb(92, 153, 133);
     }
 
     &:hover {
