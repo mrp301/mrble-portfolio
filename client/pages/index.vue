@@ -1,7 +1,7 @@
 <template>
   <section>
-    <div class='p-mainVisual'>
-    </div>
+    <!-- <div class='p-mainVisual'>
+    </div> -->
     <div class='l-container'>
       <div class='l-container__body'>
         <h2>mrbleのサイトへようこそ！</h2>

@@ -1,14 +1,16 @@
 <template>
   <div class='container'>
     <div class='work'>
-      <h1>{{ $route.params.slug }}</h1>
+      <h1>{{ data.title }}</h1>
+      {{ $route.params._id }}
       <div class='work__body'>
         <div class='work__img'>
-          <img :src='"https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/img/"+ $route.params.slug +".jpg"'>
+          <img :src='"https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/img/"+ data.title'>
         </div>
         <div class='work__info'>
-          <h2>詳細</h2>
-          <p>作品の説明が入ります作品の説明が入ります作品の説明が入ります作品の説明が入ります作品の説明が入ります作品の説明が入ります</p>
+          <h2>コメント</h2>
+          <p v-if='data.comment !== ""'>{{ data.comment }}</p>
+          <p v-else>コメントがありません。</p>
         </div>
       </div>
     </div>
@@ -16,9 +18,17 @@
 </template>
 
 <script>
-
+const axios = require('axios');
 export default {
-
+  async asyncData (route) {
+    //let {data} = await axios.get('http://localhost:3000/api/db/getData', {
+    let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData', {
+      params: {
+        id: route.params.slug
+      }
+    })
+    return { data: data }
+  }
 }
 
 </script>

@@ -54,6 +54,8 @@
         rows='5'
         v-model='log'>
       </textarea>
+      <p v-if='loading'>ロード中...</p>
+      <p v-else>ロード完了</p>
     </div>
     <div
       class='modal'
@@ -70,7 +72,7 @@
             <img
               v-else-if='modal.data.title'
               :alt='modal.data.title'
-              :src='"https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/img/"+ modal.data.title +".jpg"'>
+              :src='"https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/img/"+ modal.data.title'>
           </dd>
         </div>
         <div>
@@ -112,6 +114,7 @@ export default {
 
   data() {
     return {
+      loading: true,
       log: '',
       currentTime: '',
       modal: {
@@ -127,8 +130,12 @@ export default {
     }
   },
 
+  mounted () {
+    this.loading = false
+    this.insertLog('ロード完了\n')
+  },
+
   async asyncData (context) {
-    console.log('async発火')
     //let {data} = await axios.get('http://localhost:3000/api/db/getData')
     let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData')
     return { data: data }
@@ -140,7 +147,7 @@ export default {
       await axios.post('https://mrble-portfolio.herokuapp.com/api/db/addData', this.data)
       .then((response) => {
        this.insertLog('通信成功\n')
-       this.insertLog(response)
+       this.insertLog(response.data +'\n')
       }).catch(() => {
         this.insertLog('通信失敗\n')
       })

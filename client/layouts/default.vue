@@ -1,10 +1,23 @@
 <template>
   <div>
     <nuxt />
+    <footerTmp />
   </div>
 </template>
 
+<script>
+import footerTmp from '~/components/footerTmp'
+
+export default {
+  components: {
+    footerTmp,
+  }
+}
+
+</script>
+
 <style>
+
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;

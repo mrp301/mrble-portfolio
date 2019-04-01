@@ -1,9 +1,25 @@
+//参考：https://dev.classmethod.jp/server-side/node-js-server-side/node-js-base64-encoded-image-to-s3/
 const express = require('express');
 const url = require('url')
+const bytes = require('bytes');
 const app = express();
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  limit: bytes.parse('50mb'),
+  extended: true
+}));
+app.use(bodyParser.json({
+  limit: bytes.parse('50mb'),
+  extended: true
+}));
+
+//クロスドメイン許可
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 const path = require('path');
 const NeDB = require('nedb');
 const apiAccessKey = process.env.apiAccessKey;
@@ -11,6 +27,7 @@ let db = new NeDB({
   filename: path.join(__dirname, 'db/mirai.db'),
   autoload: true
 });
+
 const aws = require('aws-sdk');
 aws.config.update({
   accessKeyId: process.env.awsAccessKeyId,
@@ -19,23 +36,15 @@ aws.config.update({
 });
 const s3 = new aws.S3();
 
-// 環境変数が一致した時のみCORSを許可する
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
 app.post('/db/addData', (req, res) => {
   const data = req.body
-
-  //初期化
   db.remove({}, {multi: true}, (err, doc) => {
-    //postされたデータを全てinsert
     data.forEach((value, index) => {
       if(value.filePath !== '') {
+        //base64デコード
         const decodedFile = new Buffer(value.filePath.replace(/^data:\w+\/\w+;base64,/, ''), 'base64')
-        s3Upload(value.title ,decodedFile)
+        const contentType = value.filePath.toString().slice(value.filePath.indexOf(':') + 1, value.filePath.indexOf(';'))
+        s3Upload(value.title, decodedFile, contentType)
         value.filePath = ''
       }
       db.insert(value, (err, doc) => {})
@@ -45,27 +54,43 @@ app.post('/db/addData', (req, res) => {
 });
 
 app.get('/db/getData', (req, res) => {
-  //ファイルをフォーマットするためにインスタンス生成し直す
-  db = new NeDB({
-    filename: path.join(__dirname, 'db/mirai.db'),
-    autoload: true
-  });
-  db.find({}).sort({_id: 1}).exec((err, docs) => {
-    res.send(docs);
-  })
+  //dbをフォーマットするためにインスタンス生成し直す
+  // db = new NeDB({
+  //   filename: path.join(__dirname, 'db/mirai.db'),
+  //   autoload: true
+  // })
+
+  if (req.url.indexOf('/getData?id') !== -1) {
+    const id = url.parse(req.url, true).query.id
+    db.findOne({ '_id' : parseInt(id) }, (err, docs) => {
+      res.send(docs);
+    })
+  } else if (req.url.indexOf('/getData?createYear') !== -1) {
+    const createYear = url.parse(req.url, true).query.createYear
+    db.find({ 'createYear' : createYear }, (err, docs) => {
+      res.send(docs);
+    })
+  } else {
+    db.find({}).sort({_id: 1}).exec((err, docs) => {
+      res.send(docs);
+    })
+  }
 });
 
-function s3Upload(title, path) {
+function s3Upload(title, decodedFile, contentType ) {
   const params = {
     Bucket: 'mrble-portfolio',
     Key: 'img/'+ title,
-    Body: path,
-    ContentType: 'image/jpeg'
+    Body: decodedFile,
+    ContentType: contentType
   }
 
   s3.putObject(params, function(err, data) {
-    if (err) console.log(err, err.stack);
-    else     console.log(data);
+    if (err) {
+      console.log(err, err.stack)
+    } else {
+      console.log(data);
+    }
   });
 }
 

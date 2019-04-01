@@ -1,35 +1,58 @@
 <template>
-  <div class='container'>
-    <h2>作品集</h2>
-    <ul>
-      <li>2016年</li>
-      <li>2017年</li>
-      <li>2018年</li>
-      <!-- <li>
-        <nuxt-link
-          :to='{query: {sort: "2019"}, path: "/works"}'>2019年
-        </nuxt-link>
-      </li> -->
-    </ul>
-
-    <!-- <h2>ソート：{{ sort }}</h2> -->
-    <div>
-      <ul
-        v-if='data'
-        class='worksList'>
-        <li v-for='item in data'>
-          <nuxt-link :to='{name:"works-slug", params:{slug:item.title}}'>
-            <img :src='"https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/img/"+ item.title +".jpg"'>
-            <div class='worksList-head'>
-              <div class='creafix'>
-                <p class='worksList-id'>id {{ item._id }}</p>
-                <p class='worksList-createYear'>createYear {{ item.createYear }}年</p>
-              </div>
-              <p class='worksList-title'>{{ item.title }}</p>
-            </div>
+  <div>
+    <div
+      v-if='loading'
+      class='overlay'>
+      <div class='loadContainer'><img src='~/assets/images/load.gif'></div>
+    </div>
+    <div class='sortContainer'>
+      <ul class='sort'>
+        <li :class='{"is-actibe": sort === "2016"}'>
+          <nuxt-link
+            :to='{query: {createYear: "2016"}, path: "/works"}'>2016年
+          </nuxt-link>
+        </li>
+        <li :class='{"is-actibe": sort === "2017"}'>
+          <nuxt-link
+            :to='{query: {createYear: "2017"}, path: "/works"}'>2017年
+          </nuxt-link>
+        </li>
+        <li :class='{"is-actibe": sort === "2018"}'>
+          <nuxt-link
+            :to='{query: {createYear: "2018"}, path: "/works"}'>2018年
+          </nuxt-link>
+        </li>
+        <li :class='{"is-actibe": sort === "2019"}'>
+          <nuxt-link
+            :to='{query: {createYear: "2019"}, path: "/works"}'>2019年
+          </nuxt-link>
+        </li>
+        <li :class='{"is-actibe": sort === "all"}'>
+          <nuxt-link
+            :to='{path: "/works"}'>すべて
           </nuxt-link>
         </li>
       </ul>
+    </div>
+    <div class='container'>
+      <div>
+        <ul
+          v-if='data'
+          class='worksList'>
+          <li v-for='item in data'>
+            <nuxt-link :to='{name:"works-slug", params:{slug:item._id}}'>
+              <img :src='"https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/img/"+ item.title'>
+              <div class='worksList-head'>
+                <div class='creafix'>
+                  <p class='worksList-id'>id {{ item._id }}</p>
+                  <p class='worksList-createYear'>createYear {{ item.createYear }}年</p>
+                </div>
+                <p class='worksList-title'>{{ item.title }}</p>
+              </div>
+            </nuxt-link>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -37,38 +60,120 @@
 <script>
 const axios = require('axios');
 export default {
-  watchQuery: ['sort'],
+  watchQuery: ['createYear'],
 
   data() {
     return {
-      work: {
-        _id: 0,
-        title: '',
-        createYear: 2019,
-      },
-      res: {
-        data: '',
-        db: '',
-      },
-
-      validation: {
-        work: {
-          required: true,
-        }
-      }
+      loading: true
     }
   },
 
+  mounted() {
+    this.loading = false
+  },
+
   async asyncData (context) {
-    //let {data} = await axios.get('http://localhost:3000/api/db/getData')
-    let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData')
-    return { data: data }
+    if(context.query.createYear) {
+      //let {data} = await axios.get('http://localhost:3000/api/db/getData', {
+      let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData', {
+        params: {
+          createYear: context.query.createYear
+        }
+      })
+      return { data: data, loading: false, sort: context.query.createYear }
+    } else {
+      //let {data} = await axios.get('http://localhost:3000/api/db/getData')
+      let {data} = await axios.get('https://mrble-portfolio.herokuapp.com/api/db/getData')
+      return { data: data, loading: false, sort: 'all' }
+    }
   },
 }
 
 </script>
 
 <style lang='scss' scoped>
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, .8);
+}
+
+.loadContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-30px, -30px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .7);
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+}
+
+.sortContainer {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #f5f5f5;
+  border-bottom: solid 1px #d6dee5;
+  margin-bottom: 15px;
+  z-index: 10;
+  box-shadow: 0 0 7px 0 #b3b3b3;
+}
+
+.sort {
+  width: 1100px;
+  padding: 10px;
+  margin: 0 auto;
+  display: flex;
+
+  li {
+    border-radius: 4px;
+    max-width: 200px;
+    text-align: center;
+    list-style: none;
+    margin-right: 5px;
+
+    &.is-actibe {
+      opacity: .5;
+    }
+
+    &:first-child {
+      background: rgb(153, 114, 92);
+    }
+
+    &:nth-child(2) {
+      background: rgb(153, 92, 145);
+    }
+
+    &:nth-child(3) {
+      background: rgb(92, 153, 151);
+    }
+
+    &:nth-child(4) {
+      background: rgb(153, 141, 92);
+    }
+
+    &:nth-child(5) {
+      background: rgb(153, 92, 133);
+    }
+
+    &:hover {
+      opacity: .5;
+    }
+
+    a {
+      padding: 10px 30px;
+      display: block;
+      font-weight: bold;
+      color: #fff;
+    }
+  }
+}
 
 p {
   font-size: 14px;
@@ -79,7 +184,7 @@ ul {
 }
 
 h2 {
-  margin: 30px 0 10px;
+  margin-bottom: 10px;
   padding: 10px 10px;
   background: #eaeaea;
   font-size: 20px;
@@ -88,12 +193,10 @@ h2 {
 
 .container {
   width: 1100px;
-  margin: 0 auto;
+  margin: 70px auto 0;
 }
 
 .worksList {
-  /* display: flex;
-  flex-wrap: wrap; */
   list-style: none;
   column-count: 4;
   column-gap: 5px;
@@ -164,6 +267,10 @@ dl {
   .worksList {
     column-count: 2;
   }
+
+  .sortContainer {
+    overflow-x: scroll;
+  }
 }
 
 @media screen and (min-width:578px) and (max-width:992px) {
@@ -176,6 +283,10 @@ dl {
   .container {
     width: 100%;
     padding: 0 3%;
+  }
+
+  .sortContainer {
+    width: 100%;
   }
 }
 
