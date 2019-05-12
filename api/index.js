@@ -99,7 +99,7 @@ async function getFileName(name) {
 
     const params2 = {
       Bucket: 'mrble-portfolio',
-      Prefix: 'purichan/' + name
+      Prefix: 'purichan/' + name + '/'
     }
 
     s3.listObjectsV2(params2, (err, data) => {
