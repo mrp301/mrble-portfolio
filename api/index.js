@@ -94,6 +94,44 @@ function s3Upload(title, decodedFile, contentType ) {
   });
 }
 
+async function getFileName(name) {
+  return new Promise((resolve) => {
+
+    const params2 = {
+      Bucket: 'mrble-portfolio',
+      Prefix: 'purichan/' + name
+    }
+
+    s3.listObjectsV2(params2, (err, data) => {
+      if (err) {
+        console.log("Error", err)
+        resolve('Error')
+      } else {
+        const fileList = data.Contents
+        fileList.shift()
+        resolve(fileList[Math.floor(Math.random() * fileList.length )].Key)
+      }
+    })
+  })
+}
+
+app.get('/getFileName', (req, res) => {
+  const name = req.query.name
+  let filePath
+  switch(name) {
+    case 'mirai':
+    case 'emo':
+    case 'rinka':
+      getFileName(name).then((result) => {
+        res.send(result)
+      })
+    break
+    default:
+      res.send('存在しないリクエスト')
+      break
+  }
+})
+
 module.exports = {
   path: '/api',
   handler: app,
