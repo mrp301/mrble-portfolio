@@ -126,6 +126,11 @@ app.get('/getFileName', (req, res) => {
         res.send(result)
       })
     break
+    case 'full':
+      getFileName(name).then((result) => {
+        res.send("https://s3-ap-northeast-1.amazonaws.com/mrble-portfolio/"+result)
+      })
+    break
     default:
       res.send('存在しないリクエスト')
       break
